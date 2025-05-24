@@ -1,7 +1,0 @@
-streamlit
-streamlit-lottie
-langchain
-langchain-community
-langchain-groq
-dotenv
-requests
