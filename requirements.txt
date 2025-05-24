@@ -6,3 +6,4 @@ langchain-groq
 python-dotenv
 requests
 sentence-transformers
+chromadb==0.4.18
