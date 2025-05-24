@@ -7,3 +7,4 @@ python-dotenv
 requests
 sentence-transformers
 chromadb==0.4.18
+numpy<2.0
