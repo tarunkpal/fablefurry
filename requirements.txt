@@ -5,3 +5,4 @@ langchain-community
 langchain-groq
 python-dotenv
 requests
+sentence-transformers
