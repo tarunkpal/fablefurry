@@ -78,7 +78,7 @@ def build_vectorstore_from_stories():
         vectorstore = Chroma.from_documents(chunks, embeddings, persist_directory=CHROMA_DB_DIR)
         
         # Persist the vectorstore
-        vectorstore.persist()
+        # vectorstore.persist()
         st.success(f"Knowledge base created successfully with {len(documents)} documents!")
         return vectorstore
         
