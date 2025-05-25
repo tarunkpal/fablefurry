@@ -251,7 +251,7 @@ with st.sidebar:
         st.cache_resource.clear()
         if os.path.exists(CHROMA_DB_DIR):
             shutil.rmtree(CHROMA_DB_DIR)
-        st.experimental_rerun()
+        st.rerun()
 
 st.markdown("---")
 st.markdown("Powered by LangChain, Streamlit, and your wonderful stories!")
