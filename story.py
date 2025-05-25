@@ -8,6 +8,10 @@ from langchain_groq import ChatGroq # Using Groq for LLM
 from streamlit_lottie import st_lottie
 import requests
 
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 from dotenv import load_dotenv
 load_dotenv()
 
