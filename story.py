@@ -1,7 +1,8 @@
 import streamlit as st
 import os
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
+from langchain_community.document_loaders import TextLoader
 from langchain.schema.runnable import RunnableLambda
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq # Using Groq for LLM
@@ -11,13 +12,14 @@ import requests
 import shutil
 import glob
 
+
 from dotenv import load_dotenv
 load_dotenv()
 
 # SQLite fix for Streamlit Cloud
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+# __import__('pysqlite3')
+# import sys
+# sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 #--helper functions--
 def load_lottieurl(url: str):
@@ -47,14 +49,15 @@ def build_vectorstore_from_stories():
         
         # Read all story content
         documents = []
-        for file_path in story_files:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as file:
-                    content = file.read()
-                    if content.strip():  # Only add non-empty files
-                        documents.append(content)
-            except Exception as e:
-                st.warning(f"Could not read {file_path}: {e}")
+        for filename in os.listdir(MY_STORIES_DIR):
+            if filename.endswith(".txt"):
+                file_path = os.path.join(MY_STORIES_DIR, filename)
+                loader = TextLoader(file_path, encoding='utf-8', autodetect_encoding=True)
+                try:
+                    documents.extend(loader.load())
+                except Exception as e:
+                    print(f"  Warning: Could not load {filename}: {e}. Skipping this file.")
+
         
         if not documents:
             st.error("No valid story content found!")
@@ -63,24 +66,18 @@ def build_vectorstore_from_stories():
         # Create embeddings
         embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME)
         text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
+        chunk_size=700,
         chunk_overlap=150,
         separators=["\n\n", "\n", ". ", " ", ""]
     )
         chunks = text_splitter.split_documents(documents)
         print(f"Split into {len(chunks)} text chunks.")
 
-        # Create vectorstore in memory first, then persist
-        vectorstore = Chroma.from_texts(
-            texts=chunks,
-            embedding=embeddings,
-            persist_directory=CHROMA_DB_DIR,
-            collection_name="stories"
-        )
+        vectorstore = Chroma.from_documents(chunks, embeddings, persist_directory=CHROMA_DB_DIR)
         
         # Persist the vectorstore
-        # vectorstore.persist()
-        # st.success(f"Knowledge base created successfully with {len(documents)} documents!")
+        vectorstore.persist()
+        st.success(f"Knowledge base created successfully with {len(documents)} documents!")
         return vectorstore
         
     except Exception as e:
@@ -137,8 +134,8 @@ def get_vectorstore():
                 st.info("Attempting to rebuild knowledge base...")
                 
                 # Remove corrupted database
-                if os.path.exists(CHROMA_DB_DIR):
-                    shutil.rmtree(CHROMA_DB_DIR)
+                # if os.path.exists(CHROMA_DB_DIR):
+                #     shutil.rmtree(CHROMA_DB_DIR)
         
         # Build new vectorstore
         return build_vectorstore_from_stories()
@@ -170,9 +167,11 @@ def get_llm():
 with st.spinner("Loading AI components..."):
     llm = get_llm()
     vectorstore = get_vectorstore()
+    print(type(vectorstore))
 
 # --- Main App Logic ---
 if llm and vectorstore:
+    print("hello")
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5}) # Reduced for cloud performance
 
     # Define the RAG prompt
@@ -194,7 +193,7 @@ if llm and vectorstore:
     rag_chain = (
         {
             "context": RunnableLambda(format_docs) | retriever, 
-            "topic": lambda x: x["topic"]
+            "topic": RunnableLambda(lambda x: x["topic"])
         }
         | story_prompt
         | llm
@@ -217,7 +216,7 @@ if llm and vectorstore:
                     st.markdown("---")
                     
                     # Display the story with nice formatting
-                    story_content = generated_story.content if hasattr(generated_story, 'content') else str(generated_story)
+                    story_content = generated_story.content #if hasattr(generated_story, 'content') else str(generated_story)
                     st.write(story_content)
                     
                     st.markdown("---")
