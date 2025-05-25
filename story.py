@@ -27,7 +27,7 @@ def load_lottieurl(url: str):
     return r.json()
 
 def format_docs(docs):
-    d = "\n\n".join(doc.page_content for doc in docs)
+    d = "\n\n".join(doc for doc in docs)
     return str(d)
 
 def build_vectorstore_from_stories():
@@ -194,7 +194,7 @@ if llm and vectorstore:
     rag_chain = (
         {
             "context": RunnableLambda(format_docs) | retriever, 
-            "topic": RunnableLambda(lambda x: x["topic"])
+            "topic": lambda x: x["topic"]
         }
         | story_prompt
         | llm
