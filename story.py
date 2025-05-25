@@ -87,7 +87,7 @@ GROQ_API_KEY = os.getenv("api_key") or st.secrets.get("api_key", "")  # Support 
 GROQ_MODEL_NAME = "llama3-8b-8192"
 
 # --- Constants for RAG ---
-MY_STORIES_DIR = "my_stories/" # Folder containing your story .txt files
+MY_STORIES_DIR = "stories/" # Folder containing your story .txt files
 CHROMA_DB_DIR = "./chroma_db" # Directory where the ChromaDB will be stored/loaded from
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2" # Must be the same as used for building the DB
 
