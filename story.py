@@ -6,6 +6,7 @@ from langchain.schema.runnable import RunnableLambda
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq # Using Groq for LLM
 from streamlit_lottie import st_lottie
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 import requests
 import shutil
 import glob
@@ -26,7 +27,7 @@ def load_lottieurl(url: str):
     return r.json()
 
 def format_docs(docs):
-    d = "\n\n".join(doc for doc in docs)
+    d = "\n\n".join(doc.page_content for doc in docs)
     return str(d)
 
 def build_vectorstore_from_stories():
@@ -61,10 +62,17 @@ def build_vectorstore_from_stories():
         
         # Create embeddings
         embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME)
-        
+        text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=150,
+        separators=["\n\n", "\n", ". ", " ", ""]
+    )
+        chunks = text_splitter.split_documents(documents)
+        print(f"Split into {len(chunks)} text chunks.")
+
         # Create vectorstore in memory first, then persist
         vectorstore = Chroma.from_texts(
-            texts=documents,
+            texts=chunks,
             embedding=embeddings,
             persist_directory=CHROMA_DB_DIR,
             collection_name="stories"
