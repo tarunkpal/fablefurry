@@ -8,6 +8,6 @@ requests
 sentence-transformers
 chromadb==0.4.18
 numpy<2.0
-pysqlite3-binary>3.35.0
+pysqlite3-binary
 protobuf==3.20.*
 langchain-chroma
