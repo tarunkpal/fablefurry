@@ -42,7 +42,7 @@ def build_vectorstore_from_stories():
             st.error(f"No .txt files found in '{MY_STORIES_DIR}'")
             return None
         
-        st.info(f"Building knowledge base from {len(story_files)} story files...")
+        # st.info(f"Building knowledge base from {len(story_files)} story files...")
         
         # Read all story content
         documents = []
@@ -71,8 +71,8 @@ def build_vectorstore_from_stories():
         )
         
         # Persist the vectorstore
-        vectorstore.persist()
-        st.success(f"Knowledge base created successfully with {len(documents)} documents!")
+        # vectorstore.persist()
+        # st.success(f"Knowledge base created successfully with {len(documents)} documents!")
         return vectorstore
         
     except Exception as e:
@@ -120,7 +120,7 @@ def get_vectorstore():
                 )
                 
                 # Test the vectorstore
-                test_results = vectorstore.similarity_search("test", k=1)
+                # test_results = vectorstore.similarity_search("test", k=1)
                 st.success("Existing knowledge base loaded successfully!")
                 return vectorstore
                 
@@ -227,7 +227,7 @@ elif not llm:
     
 elif not vectorstore:
     st.error("❌ Knowledge base not available")
-    st.info("Please ensure your story files are in the 'my_stories/' directory.")
+    st.info("Please ensure your story files are in the 'stories/' directory.")
 
 else:
     st.info("⚙️ Setting up your story generator...")
@@ -236,12 +236,6 @@ else:
 with st.sidebar:
     st.header("📚 About Fable Flurry")
     st.write("This app creates personalized children's stories using AI and a knowledge base of existing stories.")
-    
-    st.header("🔧 Setup for Streamlit Cloud")
-    st.write("Make sure you have:")
-    st.write("• Story files in `my_stories/` folder")
-    st.write("• Groq API key in Streamlit secrets")
-    st.write("• Required packages in requirements.txt")
     
     if st.button("🔄 Rebuild Knowledge Base"):
         # Clear cache and rebuild
