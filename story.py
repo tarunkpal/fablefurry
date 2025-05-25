@@ -16,7 +16,7 @@ import glob
 from dotenv import load_dotenv
 load_dotenv()
 
-SQLite fix for Streamlit Cloud
+# SQLite fix for Streamlit Cloud
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
