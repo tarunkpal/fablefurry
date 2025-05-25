@@ -185,7 +185,7 @@ if llm and vectorstore:
     # Create the RAG chain
     rag_chain = (
         {
-            "context": retriever | RunnableLambda(format_docs), 
+            "context": RunnableLambda(format_docs) | retriever, 
             "topic": RunnableLambda(lambda x: x["topic"])
         }
         | story_prompt
