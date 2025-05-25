@@ -26,7 +26,7 @@ def load_lottieurl(url: str):
     return r.json()
 
 def format_docs(docs):
-    d = "\n\n".join(doc.page_content for doc in docs)
+    d = "\n\n".join(doc for doc in docs)
     return str(d)
 
 def build_vectorstore_from_stories():
