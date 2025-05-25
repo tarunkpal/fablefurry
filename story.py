@@ -79,7 +79,7 @@ def build_vectorstore_from_stories():
         
         # Persist the vectorstore
         # vectorstore.persist()
-        st.success(f"Knowledge base created successfully with {len(documents)} documents!")
+        st.success(f"Knowledge base created successfully !")
         return vectorstore
         
     except Exception as e:
@@ -245,13 +245,7 @@ else:
 with st.sidebar:
     st.header("📚 About Fable Flurry")
     st.write("This app creates personalized children's stories using AI and a knowledge base of existing stories.")
-    
-    if st.button("🔄 Rebuild Knowledge Base"):
-        # Clear cache and rebuild
-        st.cache_resource.clear()
-        if os.path.exists(CHROMA_DB_DIR):
-            shutil.rmtree(CHROMA_DB_DIR)
-        st.rerun()
+
 
 st.markdown("---")
 st.markdown("Powered by LangChain, Streamlit, and your wonderful stories!")
